@@ -1,12 +1,10 @@
 
-
-
- 
+import java.util.Random; 
 import java.util.*;
 
 abstract class AbstractCreator {
 
-    public abstract void crearBloque();
+    public abstract BloqueColor crearBloque();
 }
 
 

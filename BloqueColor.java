@@ -11,13 +11,14 @@ import java.awt.event.MouseAdapter;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.io.PrintStream; 
+import java.io.PrintStream;
+ 
 
 public class BloqueColor{
 
 	String color;
 
-	public BloqueColor(String color){
+	public BloqueColor(String color){ //Constructor!
 		this.color = color;
 	}
 	
