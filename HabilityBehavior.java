@@ -1,8 +1,6 @@
 
 
-public interface HabilityBehavior{
-
-	public Hability();
-
-
+public interface HabilityBehavior
+{
+	public Hability(Board board);
 }

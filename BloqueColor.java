@@ -18,12 +18,21 @@ public class BloqueColor{
 
 	String color;
 
+	public void DestruirBloque()
+	{
+		
+	}
+	
 	public BloqueColor(String color){ //Constructor!
 		this.color = color;
 	}
 	
 	public String getColor(){
 		return this.color;
+	}
+
+	public String setColor(String color){
+		this.color = color;
 	}
 
 

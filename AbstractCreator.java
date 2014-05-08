@@ -4,7 +4,7 @@ import java.util.*;
 
 abstract class AbstractCreator {
 
-    public abstract BloqueColor crearBloque();
+    public abstract Bloque crearBloque();
 }
 
 

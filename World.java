@@ -12,13 +12,20 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream; 
+import javax.swing.*;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-
-
-
-public class World{
-
-
+public class World
+{
+	/*
+	Bloque[][] board;
+	int required_blocks = 3;
 	public static void DibujarTablero(){
 
 
@@ -31,7 +38,7 @@ public class World{
 
 
     	//System.out.println("llegue!");
-    	/* Imprimir tablero...! */
+    	// Imprimir tablero...! 
 		for(int i =0; i<15;i++){
 		    
 		    for(int j =0;j<15;j++){
@@ -40,12 +47,6 @@ public class World{
 				//System.out.println("llegue!");
 
 				//System.out.print("h");
-
-
-
-				
-
-
 		    }
 		    System.out.println("");
 
@@ -58,13 +59,56 @@ public class World{
 
 
 	}
+	*/
+	//Ventana
+	JFrame frame;
+	JFrame panel;
 
-    public static void main(String[] args) {
-    	
-    	DibujarTablero();
+	//Tablero
+	Bloque[][] board;
+	public World()
+	{
+		//Nuevo panel
+		frame = new JFrame();
+		panel = new JPanel();
+		//Para panel que contiene grid
+		frame.setLayout(new GridLayout(1, 1));
+		//Panel que conitene grid
+		panel.setPreferredSize(new Dimension(450,450));
+		panel.setLayout(new GridLayout(15, 15));
+		frame.add(panel);
+		grid = new JPanel[15][15];
+		for(int y = 0; y < 15; y++){
+			for(int x = 0; x < 15; x++){
+				grid[x][y] = new Bloque();
+				grid[x][y].setPreferredSize(new Dimension(30,30));
+				grid[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK,1,true));
+				grid[x][y].setBackground(Color.white);
+				grid[x][y].setVisible(true);
+			}
+		}
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.pack();
+		frame.setVisible(true);
+		for(int y = 0; y < 15; y++){
+			for(int x = 0; x < 15; x++){
+				panel.add(grid[x][y]);
+			}	
+		}
+	}
+
+    public static void main(String[] args)
+    {
+  		Board board = new Board();
+  		//Hay que esperar a que el usuario acepte... ? como
 
 
-        }
+
+
+    	//Board board = new Board();
+    	//board.initialize();
+    	//board.draw();
+    }
 
 
 
