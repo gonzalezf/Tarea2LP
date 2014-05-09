@@ -62,7 +62,7 @@ public class World
 	*/
 	//Ventana
 	JFrame frame;
-	JFrame panel;
+	JPanel panel;
 
 	//Tablero
 	Bloque[][] board;
@@ -77,7 +77,7 @@ public class World
 		panel.setPreferredSize(new Dimension(450,450));
 		panel.setLayout(new GridLayout(15, 15));
 		frame.add(panel);
-		grid = new JPanel[15][15];
+		grid= new JPanel[15][15];
 		for(int y = 0; y < 15; y++){
 			for(int x = 0; x < 15; x++){
 				grid[x][y] = new Bloque();
@@ -100,7 +100,7 @@ public class World
     public static void main(String[] args)
     {
   		Board board = new Board();
-  		board.initialize();
+  		board.fill();
     }
 
 

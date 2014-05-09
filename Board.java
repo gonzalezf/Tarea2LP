@@ -26,7 +26,7 @@ public class Board{
 	JFrame frame;
 	JPanel panel;
 	Bloque[][] blocks;
-	public Board()
+	public void  Board()
 	{
 		frame = new JFrame();
 		panel = new JPanel();
@@ -42,18 +42,18 @@ public class Board{
 		frame.add(panel);
 	}
 
-	public fill()
+	public void fill()
 	{
 		blocks = new Bloque[15][15];
 		for(int y = 0; y < 15; y++)
 		{
 			for(int x = 0; x < 15; x++)
 			{
-				grid[x][y] = AbstractCreator.crearBloque()
-				grid[x][y].setPreferredSize(new Dimension(30,30));
-				grid[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK,1,true));
-				grid[x][y].setBackground(Color.white);
-				grid[x][y].setVisible(true);
+				blocks[x][y] = AbstractCreator.crearBloque(); //'porque se llama a abstractcreator, si llamamos altiro al bloque mejor?'
+				blocks[x][y].setPreferredSize(new Dimension(30,30));
+				blocks[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK,1,true));
+				blocks[x][y].setBackground(Color.white);
+				blocks[x][y].setVisible(true);
 			}
 		}
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -61,7 +61,7 @@ public class Board{
 		frame.setVisible(true);
 		for(int y = 0; y < 15; y++){
 			for(int x = 0; x < 15; x++){
-				panel.add(grid[x][y]);
+				panel.add(blocs[x][y]);
 			}	
 		}
 	}
