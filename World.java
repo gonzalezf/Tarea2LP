@@ -100,14 +100,7 @@ public class World
     public static void main(String[] args)
     {
   		Board board = new Board();
-  		//Hay que esperar a que el usuario acepte... ? como
-
-
-
-
-    	//Board board = new Board();
-    	//board.initialize();
-    	//board.draw();
+  		board.initialize();
     }
 
 

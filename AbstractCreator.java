@@ -1,9 +1,8 @@
 
 import java.util.Random; 
 import java.util.*;
-
-abstract class AbstractCreator {
-
+abstract class AbstractCreator
+{
     public abstract Bloque crearBloque();
 }
 

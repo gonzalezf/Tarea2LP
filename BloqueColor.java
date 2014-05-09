@@ -14,7 +14,7 @@ import java.io.PipedOutputStream;
 import java.io.PrintStream;
  
 
-public class BloqueColor{
+public class BloqueColor extends Bloque{
 
 	String color;
 
