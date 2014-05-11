@@ -120,17 +120,20 @@ public class Board implements MouseListener
 	{
 		this.visual_blocks = new JPanel[15][15];
 		this.blocks = new BloqueColor[15][15];
-		for(int y = 0; y < 15; y++)
+		int c = 0;
+		for(int x = 0; x < 15; x++)
 		{
-			for(int x = 0; x < 15; x++)
+			for(int y = 0; y < 15; y++)
 			{
 				this.blocks[x][y] = new BloqueColor();
 				this.visual_blocks[x][y] = new JPanel();
 				this.visual_blocks[x][y].setPreferredSize(new Dimension(30, 30));
-				this.visual_blocks[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK,1,true));
+				this.visual_blocks[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
 				this.visual_blocks[x][y].setBackground(Board.getActualColor(this.blocks[x][y].getColor()));
 				this.visual_blocks[x][y].setVisible(true);
 				this.visual_blocks[x][y].addMouseListener(this);
+				this.visual_blocks[x][y].add(new JLabel(""+c+""));
+				c++;
 			}
 		}
 		System.out.println(grid_panel);
@@ -194,7 +197,7 @@ public class Board implements MouseListener
 			int y = this.lastClickcoords[1];
 			int v = this.clickCoords[0];
 			int w = this.clickCoords[1];
-			System.out.println("("+x+", "+y+")|("+v+", "+w+")");
+			System.out.println("PRE ("+x+", "+y+")|("+v+", "+w+")");
 			if( (x != v || ( (y-w) != 1 && (w-y) != 1)) 
 			&& 	(y != w || ( (x-v) != 1 && (v-x) != 1)) )
 			{
@@ -270,11 +273,11 @@ public class Board implements MouseListener
 		return this.blocks[x][y];
 	}
 
-	public boolean checkExplosions(int[] coord)
+	public boolean checkExplosions(int[] org_coord)
 	{
-		if(coord != null)
+		if(org_coord != null)
 		{
-			int[] org_coord = coord.clone();
+			int[] coord = org_coord.clone();
 			int x = coord[0];
 			int y = coord[1];
 			int x_count = 1;
@@ -282,6 +285,8 @@ public class Board implements MouseListener
 			ArrayList <int[]> block_list = new ArrayList<int[]>();
 			block_list.add(coord.clone());
 			BloqueColor original = getColorAtPos(coord[0], coord[1]);
+			if(original.getColor().equals("-"))
+				return false;
 			BloqueColor buffer;
 			while((buffer = getLeftBlock(coord)) != null)
 			{
@@ -291,6 +296,7 @@ public class Board implements MouseListener
 				coord[0]--;
 				block_list.add(coord.clone());
 			}
+			coord = org_coord.clone();
 			while((buffer = getRightBlock(coord)) != null)
 			{
 				if(!buffer.getColor().equals(original.getColor()))
@@ -299,6 +305,7 @@ public class Board implements MouseListener
 				coord[0]++;
 				block_list.add(coord.clone());
 			}
+			coord = org_coord.clone();
 			while((buffer = getTopBlock(coord)) != null)
 			{
 				if(!buffer.getColor().equals(original.getColor()))
@@ -307,6 +314,7 @@ public class Board implements MouseListener
 				coord[1]--;
 				block_list.add(coord.clone());
 			}
+			coord = org_coord.clone();
 			while((buffer = getBottomBlock(coord)) != null)
 			{
 				if(!buffer.getColor().equals(original.getColor()))
@@ -316,13 +324,29 @@ public class Board implements MouseListener
 				block_list.add(coord.clone());
 			}
 			System.out.println("The block ("+original.getColor()+") has "+x_count+" horizontal blocks and "+y_count+" vertical blocks");
-			if(x_count >= 3 || y_count >= 3)
+			if(x_count >= 3)
 			{
 				this.score_panel.add(new JLabel("BOOM!"));
 				for(int[] c : block_list)
 				{
-					this.visual_blocks[c[0]][c[1]].setBackground(Color.WHITE);
-					this.blocks[c[0]][c[1]].setColor("-");
+					if(c[1] == y)
+					{
+						this.visual_blocks[c[0]][c[1]].setBackground(Color.WHITE);
+						this.blocks[c[0]][c[1]].setColor("-");
+					}
+				}
+				return true;
+			}
+			else if(y_count >= 3)
+			{
+				this.score_panel.add(new JLabel("BOOM!"));
+				for(int[] c : block_list)
+				{
+					if(c[0] == x)
+					{
+						this.visual_blocks[c[0]][c[1]].setBackground(Color.WHITE);
+						this.blocks[c[0]][c[1]].setColor("-");
+					}
 				}
 				return true;
 			}
@@ -337,6 +361,7 @@ public class Board implements MouseListener
 		boolean worked2 = checkExplosions(this.clickCoords);
 		if(!worked && !worked2)
 		{
+			System.out.println("POST ("+this.lastClickcoords[0]+", "+this.lastClickcoords[1]+")|("+this.clickCoords[0]+", "+this.clickCoords[1]+")");
 			temp_block = blocks[this.lastClickcoords[0]][this.lastClickcoords[1]];
 			blocks[this.lastClickcoords[0]][this.lastClickcoords[1]] = blocks[clickCoords[0]][clickCoords[1]];
 			blocks[clickCoords[0]][clickCoords[1]] = temp_block;
@@ -346,7 +371,7 @@ public class Board implements MouseListener
 			this.visual_blocks[clickCoords[0]][clickCoords[1]].setBackground(Board.getActualColor(this.blocks[clickCoords[0]][clickCoords[1]].getColor()));
 			this.fillEmptySpaces();
 		}
-		this.lastClick = null;
+		this.lastClick = null; 
 		this.canClick = true;
 	}
 
