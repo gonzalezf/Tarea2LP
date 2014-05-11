@@ -63,6 +63,29 @@ public class Board implements MouseListener
 		this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.frame.pack();
 		this.frame.setVisible(true);
+
+		//Esto viene de fill
+		this.visual_blocks = new JPanel[15][15];
+		this.blocks = new BloqueColor[15][15];
+		int c = 0;
+		for(int x = 0; x < 15; x++)
+		{
+			for(int y = 0; y < 15; y++)
+			{
+				this.visual_blocks[x][y] = new JPanel();
+				this.visual_blocks[x][y].setPreferredSize(new Dimension(30, 30));
+				this.visual_blocks[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
+				
+				this.visual_blocks[x][y].setVisible(true);
+				this.visual_blocks[x][y].addMouseListener(this);
+				this.visual_blocks[x][y].add(new JLabel(""+c+""));
+			}
+		}
+		for(int y = 0; y < 15; y++){
+			for(int x = 0; x < 15; x++){
+				this.grid_panel.add( visual_blocks[x][y] );
+			}	
+		}
 	}
 
 	public static Color getActualColor(String color)
@@ -160,32 +183,19 @@ public class Board implements MouseListener
 
 
 	}
+
+	//Reasigna y pinta todos los paneles, descartanto el arreglo de bloques
+	//original
+
 	public void fill() // LLENADO AL INICIO... terminado.
 	{
-		this.visual_blocks = new JPanel[15][15];
-		this.blocks = new BloqueColor[15][15];
-		int c = 0;
 		for(int x = 0; x < 15; x++)
 		{
 			for(int y = 0; y < 15; y++)
 			{
 				this.blocks[x][y] = new BloqueColor();
-				this.visual_blocks[x][y] = new JPanel();
-				this.visual_blocks[x][y].setPreferredSize(new Dimension(30, 30));
-				this.visual_blocks[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
 				this.visual_blocks[x][y].setBackground(Board.getActualColor(this.blocks[x][y].getColor()));
-				this.visual_blocks[x][y].setVisible(true);
-				this.visual_blocks[x][y].addMouseListener(this);
-				this.visual_blocks[x][y].add(new JLabel(""+c+""));
-				c++;
 			}
-		}
-		System.out.println(grid_panel);
-		System.out.println(score_panel);
-		for(int y = 0; y < 15; y++){
-			for(int x = 0; x < 15; x++){
-				this.grid_panel.add( visual_blocks[x][y] );
-			}	
 		}
 	}
 
@@ -316,7 +326,6 @@ public class Board implements MouseListener
 			return null;
 		return this.blocks[x][y];
 	}
-
 	public boolean checkExplosions(int[] org_coord)// verificar o hacer explotar al inicio!
 	{
 		if(org_coord != null)
@@ -334,7 +343,9 @@ public class Board implements MouseListener
 			BloqueColor buffer;
 			while((buffer = getLeftBlock(coord)) != null) // ir a la izquierda!
 			{
-				if(!buffer.getColor().equals(original.getColor()))
+				if(!buffer.getColor().equals(original.getColor())
+				&& !buffer.getColor().equals("T")
+				&& !buffer.getColor().equals("U"))
 					break;
 				x_count++;
 				coord[0]--;
@@ -343,7 +354,9 @@ public class Board implements MouseListener
 			coord = org_coord.clone();
 			while((buffer = getRightBlock(coord)) != null)
 			{
-				if(!buffer.getColor().equals(original.getColor()))
+				if(!buffer.getColor().equals(original.getColor())
+				&& !buffer.getColor().equals("T")
+				&& !buffer.getColor().equals("U"))
 					break;
 				x_count++;
 				coord[0]++;
@@ -352,7 +365,9 @@ public class Board implements MouseListener
 			coord = org_coord.clone();
 			while((buffer = getTopBlock(coord)) != null)
 			{
-				if(!buffer.getColor().equals(original.getColor()))
+				if(!buffer.getColor().equals(original.getColor())
+				&& !buffer.getColor().equals("T")
+				&& !buffer.getColor().equals("U"))
 					break;
 				y_count++;
 				coord[1]--;
@@ -361,7 +376,9 @@ public class Board implements MouseListener
 			coord = org_coord.clone();
 			while((buffer = getBottomBlock(coord)) != null)
 			{
-				if(!buffer.getColor().equals(original.getColor()))
+				if(!buffer.getColor().equals(original.getColor())
+				&& !buffer.getColor().equals("T")
+				&& !buffer.getColor().equals("U"))
 					break;
 				y_count++;
 				coord[1]++;
@@ -401,8 +418,83 @@ public class Board implements MouseListener
 	//Verifico si el movimiento fue exitoso
 	public void checkSwap()
 	{
-		boolean worked = checkExplosions(this.lastClickcoords);
-		boolean worked2 = checkExplosions(this.clickCoords);
+		//Esto resuelve el siguiente problema:
+		//Si se mueve un comodin, este buscara cualquier color y causara que se elimine
+		//toda la fila. Para esto, lo que se hace es chequear las exploiones de los vecinos.
+		//Nota: Si el vecino es otro comodin, pasara el problema anterior igual. Se debe arreglar.
+		boolean worked = false, worked2 = false;
+
+		//Para el primero que se intercambio
+		if(this.getColorAtPos(this.lastClickcoords[0], this.lastClickcoords[1]).getColor().equals("T")
+		|| this.getColorAtPos(this.lastClickcoords[0], this.lastClickcoords[1]).getColor().equals("U"))
+		{
+			//El clone sirve para no usar la misma referencia (puntero) pues cambios
+			//en la referencia alteran al original.
+
+			//Veo vecino de la derecha.
+			int[] coords = this.lastClickcoords.clone();
+			coords[0]--;
+			worked = checkExplosions(coords);
+
+			//Si no exploto, izquierda
+			if(!worked)
+			{
+				coords = this.lastClickcoords.clone();
+				coords[0]++;
+				worked = checkExplosions(coords);
+			}
+
+			//Arriba
+			if(!worked)
+			{
+				coords = this.lastClickcoords.clone();
+				coords[1]++;
+				worked = checkExplosions(coords);
+			}
+
+			//Abajo
+			if(!worked)
+			{
+				coords = this.lastClickcoords.clone();
+				coords[1]--;
+				worked = checkExplosions(coords);	
+			}
+		}
+		else
+		{
+			worked = checkExplosions(this.lastClickcoords);
+		}
+		if(this.getColorAtPos(this.clickCoords[0], this.clickCoords[1]).getColor().equals("T")
+		|| this.getColorAtPos(this.clickCoords[0], this.clickCoords[1]).getColor().equals("U"))
+		{
+			int[] coords = this.clickCoords.clone();
+			coords[0]--;
+			worked2 = checkExplosions(coords);
+			if(!worked)
+			{
+				coords = this.clickCoords.clone();
+				coords[0]++;
+				worked2 = checkExplosions(coords);
+			}
+			if(!worked)
+			{
+				coords = this.clickCoords.clone();
+				coords[1]++;
+				worked2 = checkExplosions(coords);
+			}
+			if(!worked)
+			{
+				coords = this.clickCoords.clone();
+				coords[1]--;
+				worked2 = checkExplosions(coords);	
+			}
+		}
+		else
+		{
+			worked2 = checkExplosions(this.clickCoords);
+		}
+
+		//No hubo explosiones, deshacer intercambio
 		if(!worked && !worked2)
 		{
 			System.out.println("POST ("+this.lastClickcoords[0]+", "+this.lastClickcoords[1]+")|("+this.clickCoords[0]+", "+this.clickCoords[1]+")");
@@ -416,6 +508,8 @@ public class Board implements MouseListener
 			this.fillEmptySpaces();
 		}
 		this.lastClick = null; 
+
+		//El usuario ya puede clickear.
 		this.canClick = true;
 	}
 
