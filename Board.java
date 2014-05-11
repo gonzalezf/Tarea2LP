@@ -100,9 +100,9 @@ public class Board implements MouseListener
 			return Color.ORANGE;
 		else if(color.equals("Y"))
 			return Color.YELLOW;
-		else if(color.equals("T"))
+		else if(color.equals("$"))
 			return Color.GRAY;
-		else if(color.equals("U"))
+		else if(color.equals("&"))
 			return Color.BLACK;
 		return Color.WHITE;
 
@@ -143,14 +143,30 @@ public class Board implements MouseListener
 			break;
 		}
 	}
+	public void EliminadoAutomatico(){
+
+
+		//por cada movimiento debe recorrer y eliminar todos los colores adyacentes. Recordar que es 
+		//fila y columna!
+
+	}
+
+	public void LlenadoAutomatico(){
+
+		//tras eliminarse debe bajar las cosas en forma de pila automaticamente...
+		//desde arriba hacia abajo con colores distintos...
+
+	}
+
+
 
 	public void IsAnyMove(){
 		Board b = World.board;
 		int contador = 0; //cuando llega a tres significa que hay un motivimiento valido
-		String color = '';
+		String color = "";
 		for(int y=0;y<15;y++){
 			for(int x = 0;x<15;x++){
-				if(color.equals(b.blocks[x][y].getColor()) || 'T'.equals(b.blocks[x][y].getColor()) || 'U'.equals.(b.blocks[x][y].getColor())){
+				if(color.equals(b.blocks[x][y].getColor()) || b.blocks[x][y].getColor().equals("$") || b.blocks[x][y].getColor().equals("&")){
 					contador+=1;
 
 				}
@@ -164,11 +180,11 @@ public class Board implements MouseListener
 			}			
 		}
 		contador =0;
-		color = '';
+		color = "";
 		for(int x =0;x<15;x++){
 			for(int y = 0;y<15;y++){
-				if(color.equals(b.blocks[x][y].getColor()) || 'T'.equals(b.blocks[x][y].getColor()) || 'U'.equals.(b.blocks[x][y].getColor())){
-					contador+=1
+				if(color.equals(b.blocks[x][y].getColor()) || b.blocks[x][y].getColor().equals("$") || b.blocks[x][y].getColor().equals("&")){
+					contador+=1;
 				}
 				else{
 					color = b.blocks[x][y].getColor();
@@ -179,6 +195,7 @@ public class Board implements MouseListener
 			}
 		}
 		//no hay movimiento validos!
+		b.fill(); // deberia reiniciarse!
 		
 
 
@@ -202,6 +219,7 @@ public class Board implements MouseListener
 	//Las coordenadas que se obtiene son del tipo (x, y);
 	public void mouseClicked(MouseEvent me)
 	{
+		IsAnyMove(); // checkea si hay mas movimientos!
 		if(!this.canClick)
 		{
 			return;
@@ -344,8 +362,8 @@ public class Board implements MouseListener
 			while((buffer = getLeftBlock(coord)) != null) // ir a la izquierda!
 			{
 				if(!buffer.getColor().equals(original.getColor())
-				&& !buffer.getColor().equals("T")
-				&& !buffer.getColor().equals("U"))
+				&& !buffer.getColor().equals("$")
+				&& !buffer.getColor().equals("&"))
 					break;
 				x_count++;
 				coord[0]--;
@@ -355,8 +373,8 @@ public class Board implements MouseListener
 			while((buffer = getRightBlock(coord)) != null)
 			{
 				if(!buffer.getColor().equals(original.getColor())
-				&& !buffer.getColor().equals("T")
-				&& !buffer.getColor().equals("U"))
+				&& !buffer.getColor().equals("$")
+				&& !buffer.getColor().equals("&"))
 					break;
 				x_count++;
 				coord[0]++;
@@ -366,8 +384,8 @@ public class Board implements MouseListener
 			while((buffer = getTopBlock(coord)) != null)
 			{
 				if(!buffer.getColor().equals(original.getColor())
-				&& !buffer.getColor().equals("T")
-				&& !buffer.getColor().equals("U"))
+				&& !buffer.getColor().equals("$")
+				&& !buffer.getColor().equals("&"))
 					break;
 				y_count++;
 				coord[1]--;
@@ -377,8 +395,8 @@ public class Board implements MouseListener
 			while((buffer = getBottomBlock(coord)) != null)
 			{
 				if(!buffer.getColor().equals(original.getColor())
-				&& !buffer.getColor().equals("T")
-				&& !buffer.getColor().equals("U"))
+				&& !buffer.getColor().equals("$")
+				&& !buffer.getColor().equals("&"))
 					break;
 				y_count++;
 				coord[1]++;
@@ -393,7 +411,7 @@ public class Board implements MouseListener
 					if(c[1] == y)
 					{
 						this.visual_blocks[c[0]][c[1]].setBackground(Color.WHITE);
-						this.blocks[c[0]][c[1]].setColor("-");
+						this.blocks[c[0]][c[1]] = null;
 					}
 				}
 				return true;
@@ -406,7 +424,7 @@ public class Board implements MouseListener
 					if(c[0] == x)
 					{
 						this.visual_blocks[c[0]][c[1]].setBackground(Color.WHITE);
-						this.blocks[c[0]][c[1]].setColor("-");
+						this.blocks[c[0]][c[1]] = null;
 					}
 				}
 				return true;
@@ -425,8 +443,8 @@ public class Board implements MouseListener
 		boolean worked = false, worked2 = false;
 
 		//Para el primero que se intercambio
-		if(this.getColorAtPos(this.lastClickcoords[0], this.lastClickcoords[1]).getColor().equals("T")
-		|| this.getColorAtPos(this.lastClickcoords[0], this.lastClickcoords[1]).getColor().equals("U"))
+		if(this.getColorAtPos(this.lastClickcoords[0], this.lastClickcoords[1]).getColor().equals("$")
+		|| this.getColorAtPos(this.lastClickcoords[0], this.lastClickcoords[1]).getColor().equals("&"))
 		{
 			//El clone sirve para no usar la misma referencia (puntero) pues cambios
 			//en la referencia alteran al original.
@@ -464,8 +482,8 @@ public class Board implements MouseListener
 		{
 			worked = checkExplosions(this.lastClickcoords);
 		}
-		if(this.getColorAtPos(this.clickCoords[0], this.clickCoords[1]).getColor().equals("T")
-		|| this.getColorAtPos(this.clickCoords[0], this.clickCoords[1]).getColor().equals("U"))
+		if(this.getColorAtPos(this.clickCoords[0], this.clickCoords[1]).getColor().equals("$")
+		|| this.getColorAtPos(this.clickCoords[0], this.clickCoords[1]).getColor().equals("&"))
 		{
 			int[] coords = this.clickCoords.clone();
 			coords[0]--;

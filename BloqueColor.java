@@ -53,11 +53,11 @@ public class BloqueColor extends Bloque{
 			Random rand2 = new Random();
 			int z = rand2.nextInt(2);
 			if(z==0){
-				this.color = "T"; //comodin 1 
+				this.color = "$"; //comodin 1 
 
 			} 
 			if(z==1){
-				this.color = "U"; // comodin 2
+				this.color = "&"; // comodin 2
 
 			}
 

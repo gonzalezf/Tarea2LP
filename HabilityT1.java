@@ -1,8 +1,9 @@
 class HabilityT1 implements HabilityBehavior
-{
-
-	public int Hability(){ //rompe toda la fila...!
-
+{	public int Hability(Board board)
+	{
+		//....
+		return 0;
 	}
-	
 }
+
+	
