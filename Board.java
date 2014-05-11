@@ -121,6 +121,45 @@ public class Board implements MouseListener
 		}
 	}
 
+	public void IsAnyMove(){
+		Board b = World.board;
+		int contador = 0; //cuando llega a tres significa que hay un motivimiento valido
+		String color = '';
+		for(int y=0;y<15;y++){
+			for(int x = 0;x<15;x++){
+				if(color.equals(b.blocks[x][y].getColor()) || 'T'.equals(b.blocks[x][y].getColor()) || 'U'.equals.(b.blocks[x][y].getColor())){
+					contador+=1;
+
+				}
+				else{
+					color = b.blocks[x][y].getColor();
+					contador =0;
+				}
+				if(contador==2)
+					return;//movimiento valido
+
+			}			
+		}
+		contador =0;
+		color = '';
+		for(int x =0;x<15;x++){
+			for(int y = 0;y<15;y++){
+				if(color.equals(b.blocks[x][y].getColor()) || 'T'.equals(b.blocks[x][y].getColor()) || 'U'.equals.(b.blocks[x][y].getColor())){
+					contador+=1
+				}
+				else{
+					color = b.blocks[x][y].getColor();
+					contador =0;
+				}
+				if( contador ==2)
+					return; //movimiento valido
+			}
+		}
+		//no hay movimiento validos!
+		
+
+
+	}
 	public void fill() // LLENADO AL INICIO... terminado.
 	{
 		this.visual_blocks = new JPanel[15][15];

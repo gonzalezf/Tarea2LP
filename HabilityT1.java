@@ -4,7 +4,7 @@ class HabilityT1 implements HabilityBehavior
 	{
 		//Habilidad...
 	}*/
-	public void Hability(){
+	public int Hability(){ //rompe toda la fila...!
 
 	
 	}

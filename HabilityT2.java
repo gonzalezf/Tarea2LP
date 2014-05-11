@@ -1,6 +1,6 @@
 class HabilityT2 implements HabilityBehavior
 {
-	public void Hability(Board board)
+	public int Hability() //rompe toda la columna...
 	{
 		//Habilidad...
 	}
