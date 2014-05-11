@@ -15,7 +15,7 @@ import java.io.PrintStream;
  
 
 public class BloqueColor extends Bloque{
-	HabilityBehavior habilidad; // se rompió el modelo!
+	//HabilityBehavior habilidad; // se rompió el modelo!
 	String color;
 
 	public void DestruirBloque()
@@ -25,7 +25,7 @@ public class BloqueColor extends Bloque{
 	public BloqueColor()
 	{
 		Random rand1 = new Random();
-		int y = rand.nextInt(100);
+		int y = rand1.nextInt(100);
 		if (y <95){
 
 			Random rand = new Random();
@@ -51,7 +51,7 @@ public class BloqueColor extends Bloque{
 		}
 		else{
 			Random rand2 = new Random();
-			int z = rand.nextInt(2);
+			int z = rand2.nextInt(2);
 			if(z==0){
 				this.color = "T"; //comodin 1 
 
