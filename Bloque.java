@@ -20,8 +20,8 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
- 
-abstract class Bloque extends JPanel
+
+public abstract class Bloque extends JPanel
 {
-	public void DestruirBloque();
+	public abstract void DestruirBloque();
 }

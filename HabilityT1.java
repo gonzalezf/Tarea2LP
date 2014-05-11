@@ -1,6 +1,6 @@
 class HabilityT1 implements HabilityBehavior
 {
-	public Hability(Board board)
+	public void Hability(Board board)
 	{
 		//Habilidad...
 	}

@@ -1,30 +1,29 @@
 import java.util.*;
 import java.util.Random;
 
-public class ColorCreator extends AbstractCreator{
-
-	public static BloqueColor crearBloque()
+public class ColorCreator extends AbstractCreator
+{
+	public Bloque crearBloque()
 	{
-		System.out.println("ALOO!!!!!!!- Color Creator!");
 		Random rand = new Random();
 		int x = rand.nextInt(5);
 		if(x==0){
-			return new BloqueColor("R");		
+			return (Bloque) new BloqueColor("R");		
 		}
 		if(x==1){
-			return new BloqueColor("B");	
+			return (Bloque) new BloqueColor("B");	
 		}
 
 		if(x==2){
-			return new BloqueColor("O");
+			return (Bloque) new BloqueColor("O");
 		}
 		
 		if(x==3){
-			return new BloqueColor("G");
+			return (Bloque) new BloqueColor("G");
 		}
 
 		if(x==4){
-			return new BloqueColor("Y");	
+			return (Bloque) new BloqueColor("Y");	
 		}
 		return null;
 	}
