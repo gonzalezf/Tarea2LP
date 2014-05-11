@@ -77,7 +77,12 @@ public class Board implements MouseListener
 			return Color.ORANGE;
 		else if(color.equals("Y"))
 			return Color.YELLOW;
+		else if(color.equals("T"))
+			return Color.GRAY;
+		else if(color.equals("U"))
+			return Color.BLACK;
 		return Color.WHITE;
+
 	}
 
 	public void draw()
@@ -86,7 +91,7 @@ public class Board implements MouseListener
 		this.frame.repaint();
 	}
 
-	public void fillEmptySpaces()
+	public void fillEmptySpaces() // Terminar!!!!
 	{
 		while(true)
 		{
@@ -116,7 +121,7 @@ public class Board implements MouseListener
 		}
 	}
 
-	public void fill()
+	public void fill() // LLENADO AL INICIO... terminado.
 	{
 		this.visual_blocks = new JPanel[15][15];
 		this.blocks = new BloqueColor[15][15];
@@ -142,7 +147,7 @@ public class Board implements MouseListener
 		}
 	}
 
-	//Las coordenadas que se obtiene son del tipo (y, x);
+	//Las coordenadas que se obtiene son del tipo (x, y);
 	public void mouseClicked(MouseEvent me)
 	{
 		if(!this.canClick)
@@ -270,20 +275,20 @@ public class Board implements MouseListener
 		return this.blocks[x][y];
 	}
 
-	public boolean checkExplosions(int[] coord)
+	public boolean checkExplosions(int[] coord) // verificar o hacer explotar al inicio!
 	{
 		if(coord != null)
 		{
-			int[] org_coord = coord.clone();
+			int[] org_coord = coord.clone(); //variable aux
 			int x = coord[0];
 			int y = coord[1];
-			int x_count = 1;
+			int x_count = 1; //contador para ver vecinos adyacentes. si son 3 explota.
 			int y_count = 1;
-			ArrayList <int[]> block_list = new ArrayList<int[]>();
-			block_list.add(coord.clone());
-			BloqueColor original = getColorAtPos(coord[0], coord[1]);
+			ArrayList <int[]> block_list = new ArrayList<int[]>(); //lista de coordenadas
+			block_list.add(coord.clone()); //se añade el primer bloque
+			BloqueColor original = getColorAtPos(coord[0], coord[1]); //obtener color de bloque
 			BloqueColor buffer;
-			while((buffer = getLeftBlock(coord)) != null)
+			while((buffer = getLeftBlock(coord)) != null) // ir a la izquierda!
 			{
 				if(!buffer.getColor().equals(original.getColor()))
 					break;
@@ -319,7 +324,7 @@ public class Board implements MouseListener
 			if(x_count >= 3 || y_count >= 3)
 			{
 				this.score_panel.add(new JLabel("BOOM!"));
-				for(int[] c : block_list)
+				for(int[] c : block_list) // recorre lista
 				{
 					this.visual_blocks[c[0]][c[1]].setBackground(Color.WHITE);
 					this.blocks[c[0]][c[1]].setColor("-");
