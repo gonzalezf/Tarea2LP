@@ -77,7 +77,12 @@ public class Board implements MouseListener
 			return Color.ORANGE;
 		else if(color.equals("Y"))
 			return Color.YELLOW;
+		else if(color.equals("T"))
+			return Color.GRAY;
+		else if(color.equals("U"))
+			return Color.BLACK;
 		return Color.WHITE;
+
 	}
 
 	public void draw()
@@ -86,7 +91,7 @@ public class Board implements MouseListener
 		this.frame.repaint();
 	}
 
-	public void fillEmptySpaces()
+	public void fillEmptySpaces() // Terminar!!!!
 	{
 		while(true)
 		{
@@ -116,7 +121,7 @@ public class Board implements MouseListener
 		}
 	}
 
-	public void fill()
+	public void fill() // LLENADO AL INICIO... terminado.
 	{
 		this.visual_blocks = new JPanel[15][15];
 		this.blocks = new BloqueColor[15][15];
@@ -145,7 +150,7 @@ public class Board implements MouseListener
 		}
 	}
 
-	//Las coordenadas que se obtiene son del tipo (y, x);
+	//Las coordenadas que se obtiene son del tipo (x, y);
 	public void mouseClicked(MouseEvent me)
 	{
 		if(!this.canClick)
@@ -273,14 +278,14 @@ public class Board implements MouseListener
 		return this.blocks[x][y];
 	}
 
-	public boolean checkExplosions(int[] org_coord)
+	public boolean checkExplosions(int[] org_coord)// verificar o hacer explotar al inicio!
 	{
 		if(org_coord != null)
 		{
 			int[] coord = org_coord.clone();
 			int x = coord[0];
 			int y = coord[1];
-			int x_count = 1;
+			int x_count = 1; //contador para ver vecinos adyacentes. si son 3 explota.
 			int y_count = 1;
 			ArrayList <int[]> block_list = new ArrayList<int[]>();
 			block_list.add(coord.clone());
@@ -288,7 +293,7 @@ public class Board implements MouseListener
 			if(original.getColor().equals("-"))
 				return false;
 			BloqueColor buffer;
-			while((buffer = getLeftBlock(coord)) != null)
+			while((buffer = getLeftBlock(coord)) != null) // ir a la izquierda!
 			{
 				if(!buffer.getColor().equals(original.getColor()))
 					break;
@@ -340,7 +345,7 @@ public class Board implements MouseListener
 			else if(y_count >= 3)
 			{
 				this.score_panel.add(new JLabel("BOOM!"));
-				for(int[] c : block_list)
+				for(int[] c : block_list) // recorre lista
 				{
 					if(c[0] == x)
 					{

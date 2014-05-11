@@ -15,7 +15,7 @@ import java.io.PrintStream;
  
 
 public class BloqueColor extends Bloque{
-
+	HabilityBehavior habilidad; // se rompió el modelo!
 	String color;
 
 	public void DestruirBloque()
@@ -24,26 +24,46 @@ public class BloqueColor extends Bloque{
 	
 	public BloqueColor()
 	{
-		Random rand = new Random();
-		int x = rand.nextInt(5);
-		if(x==0){
-			this.color = "R";		
+		Random rand1 = new Random();
+		int y = rand.nextInt(100);
+		if (y <95){
+
+			Random rand = new Random();
+			int x = rand.nextInt(5);
+			if(x==0){
+				this.color = "R";		
+			}
+			if(x==1){
+				this.color = "B";
+			}
+
+			if(x==2){
+				this.color = "O";
+			}
+			
+			if(x==3){
+				this.color = "G";
+			}
+
+			if(x==4){
+				this.color = "Y";
+			}
 		}
-		if(x==1){
-			this.color = "B";
+		else{
+			Random rand2 = new Random();
+			int z = rand.nextInt(2);
+			if(z==0){
+				this.color = "T"; //comodin 1 
+
+			} 
+			if(z==1){
+				this.color = "U"; // comodin 2
+
+			}
+
 		}
 
-		if(x==2){
-			this.color = "O";
-		}
-		
-		if(x==3){
-			this.color = "G";
-		}
 
-		if(x==4){
-			this.color = "Y";
-		}
 	}
 
 	public BloqueColor(String color)
