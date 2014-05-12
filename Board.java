@@ -41,6 +41,114 @@ import java.awt.event.MouseListener;
 //Nota: Se llena luego de que dejan de haber explosiones.
 
 //Para detectar en que panel hace click el mouse
+
+/******** Funcion: getActualColor **************
+Descripcion: obtener color actual de un bloque para visualizarlo en pantalla
+Parametros: string color
+Retorno: color que debe tener el bloque en pantalla
+************************************************/
+/******** Funcion: FillColumn **************
+Descripcion: rellena una columna (los blancos) por los colores de arriba
+ Parametros: variable x que indica numero de columna
+
+Retorno: nada
+************************************************/
+/******** Funcion: FillBoard **************
+Descripcion: rellenar el arreglo bidimensional completo
+Parametros: nada
+
+Retorno: nada
+************************************************/
+/******** Funcion: draw **************
+Descripcion: Funcion en cargada de...
+Parametros: revalidate and repaint
+
+Retorno:
+************************************************/
+/******** Funcion: Eliminado Automatico **************
+Descripcion: si existen explosiones que deben realizarse. la funcion las elimina automaticamente
+Parametros:
+Retorno: void
+************************************************/
+/******** Funcion: IsAnyMove**************
+Descripcion: Hay un movimiento valido? Si no quedan movimientos validos, debe reiniciarse
+Parametros:
+
+Retorno: void
+************************************************/
+/******** Funcion: refill**************
+Descripcion: Funcion en cargada de volver a llenar el tablero, borrando todo lo anterior
+Parametros:
+n1 entero
+n2 entero
+Retorno: void
+************************************************/
+/******** Funcion: Nombre_Funcion **************
+Descripcion: Funcion en cargada de...
+Parametros:
+n1 entero
+n2 entero
+Retorno: Retorna...
+************************************************/
+/******** Funcion: mouseclicked**************
+Descripcion: Funcion en cargada de...
+Parametros: mouseevent
+
+Retorno: void
+************************************************/
+
+/******** Funcion: HighLightNeighboors**************
+Descripcion: Funcion para debuguear.
+Parametros:  Bloque
+
+Retorno: void
+************************************************/
+/******** Funcion: getRightBlock**************
+Descripcion: Obtiene bloque de la derecha
+Parametros:  Bloque
+
+Retorno: Bloque
+************************************************/
+/******** Funcion: getLeftBlock**************
+Descripcion: obtiene bloque de la izquierda
+Parametros:  Bloque
+
+Retorno: Bloque
+************************************************/
+/******** Funcion: getTopBlock**************
+Descripcion: obtiene bloque de arriba
+Parametros:  Bloque
+
+Retorno: Bloque
+************************************************/
+/******** Funcion: getBottomBlock**************
+Descripcion: obtiene bloque de abajo.
+Parametros:  Bloque
+
+Retorno: Bloque
+************************************************/
+/******** Funcion: getColorAtPos**************
+Descripcion: obtener bloque en cierta posicion.
+Parametros:  Bloque
+
+Retorno: Bloque
+************************************************/
+/******** Funcion: CheckExplosions**************
+Descripcion: Funcion en cargada de chequear explosiones y hacerlas explotar dentro del tablero.
+Parametros:  Bloque
+
+Retorno: booleano
+************************************************/
+/******** Funcion: CheckSwap**************
+Descripcion: Esto resuelve el siguiente problema:
+		Si se mueve un comodin, este buscara cualquier color y causara que se elimine
+		toda la fila. Para esto, lo que se hace es chequear las exploiones de los vecinos.
+		Nota: Si el vecino es otro comodin, pasara el problema anterior igual. Se debe arreglar.
+Parametros:  Bloque
+
+Retorno: void
+************************************************/
+
 public class Board implements MouseListener
 {
 	JFrame frame; //Ventana principal
@@ -242,20 +350,22 @@ public class Board implements MouseListener
 		}
 	}
 	*/
+
 	public void EliminadoAutomatico(){
+		//recorrer arreglo completo...! y eliminar los adyacentes..!
+		for(int i = 0;i<15;i++){
+			for(int j=0;j<15;j++){
+				checkExplosions(bloque[i][j]);
 
 
-		//por cada movimiento debe recorrer y eliminar todos los colores adyacentes. Recordar que es 
-		//fila y columna!
+			}
+
+		}
+
 
 	}
 
-	public void LlenadoAutomatico(){
 
-		//tras eliminarse debe bajar las cosas en forma de pila automaticamente...
-		//desde arriba hacia abajo con colores distintos...
-
-	}
 
 
 
