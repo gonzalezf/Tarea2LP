@@ -21,15 +21,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class ColorCreator extends AbstractCreator
+public class BloqueFactory
 {
-	public BloqueColor crearBloque()
+	public static Bloque crearBloque (AbstractCreator strategy)
 	{
-		return new BloqueColor();
-	}
-
-	public ColorCreator()
-	{
-		
+		return (Bloque) strategy.crearBloque();
 	}
 }

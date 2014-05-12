@@ -22,23 +22,39 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+//Un pequeño comentario en como funcionara.
+//Primero se mostrara el menu de bienvenida, en donde
+//el usuario debera hacer click en Jugar o Salir
+//Si hace click en jugar, saldra otro dialogo
+//en donde debera decir cuantos bloques de cada
+//color deben ser explotados para ganar.
+//
+//Luego comenzara el juego:
+//1)Se llena completamente el tablero utilizadno refill();
+//2)Verifica columna por columna, y en cada una, bloque por
+//bloque si algun de ellos explota, si lo hace, se explota
+//y se vuelve a verificar del comienzo.
+//3)Si no hay mas posibles movimientos, se hace un refill.
+//4)De otra forma, se espera al input del usuario
+//5)Si el usuario explota algo, se verifica primero el bloque
+//movido, si este explota se verifica en todos lados.
+//Nota: Se llena luego de que dejan de haber explosiones.
+
 //Para detectar en que panel hace click el mouse
 public class Board implements MouseListener
 {
-	JFrame frame;
-	JPanel grid_panel;
-	JPanel score_panel;
-	JPanel[][] visual_blocks;
-	BloqueColor[][] blocks;
+	JFrame frame; //Ventana principal
+	JPanel grid_panel; //Panel con los bloques
+	JPanel score_panel; //Panel con el puntaje
 	boolean canClick;
-	int[] lastClickcoords;
-	JPanel lastClick;
+	Bloque firstClickedBlock; //Ultimo bloque clickeado
+	Bloque secondClickedBlock;
 	BloqueColor temp_block;
+	Bloque blocks[][];
 	int[] clickCoords;
 	public Board()
 	{
 		this.canClick = true;
-		this.lastClickcoords = new int[2];
 		//Esta es la ventana (teorica) que almacena todo
 		this.frame = new JFrame();
 
@@ -64,28 +80,46 @@ public class Board implements MouseListener
 		this.frame.pack();
 		this.frame.setVisible(true);
 
-		//Esto viene de fill
-		this.visual_blocks = new JPanel[15][15];
-		this.blocks = new BloqueColor[15][15];
-		int c = 0;
-		for(int x = 0; x < 15; x++)
+		//Inicializamos el arreglo de bloques
+		this.blocks = new Bloque[15][15];
+		int c = 0; //Esto es solo para debug
+
+		//Para mantener coordenadas cartesianas
+		for(int y = 14; y >= 0; y--)
 		{
-			for(int y = 0; y < 15; y++)
+			for(int x = 0; x <= 14; x++)
 			{
-				this.visual_blocks[x][y] = new JPanel();
-				this.visual_blocks[x][y].setPreferredSize(new Dimension(30, 30));
-				this.visual_blocks[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
-				
-				this.visual_blocks[x][y].setVisible(true);
-				this.visual_blocks[x][y].addMouseListener(this);
-				this.visual_blocks[x][y].add(new JLabel(""+c+""));
+				//Veamos la probabilidad de que salga un comodin o no
+				Random rand1 = new Random();
+				int n = rand1.nextInt(100);
+				if( n < 95 )
+				{
+					//Lo que use aqui fue el metodo de la estrategia en wikipedia
+					//Lee lo que sale ahi para entender como funciona esta parte
+					this.blocks[x][y] = BloqueFactory.crearBloque( new ColorCreator() );
+				}
+				else
+				{
+					this.blocks[x][y] = BloqueFactory.crearBloque( new ComodinCreator() );
+				}
+				this.blocks[x][y].x = x;
+				this.blocks[x][y].y = y;
+				this.blocks[x][y].setPreferredSize(new Dimension(30, 30));
+				this.blocks[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
+				this.blocks[x][y].paintColor();
+				this.blocks[x][y].setVisible(true);
+				this.blocks[x][y].addMouseListener(this);
+				this.blocks[x][y].add(new JLabel(""+c+""));
+
+				//Añadir al grid
+				this.grid_panel.add( blocks[x][y] );
 			}
 		}
-		for(int y = 0; y < 15; y++){
-			for(int x = 0; x < 15; x++){
-				this.grid_panel.add( visual_blocks[x][y] );
-			}	
-		}
+	}
+
+	public void OnExplosion()
+	{
+
 	}
 
 	public static Color getActualColor(String color)
@@ -113,7 +147,7 @@ public class Board implements MouseListener
 		this.frame.revalidate();
 		this.frame.repaint();
 	}
-
+	/*
 	public void fillEmptySpaces() // Terminar!!!!
 	{
 		while(true)
@@ -143,6 +177,7 @@ public class Board implements MouseListener
 			break;
 		}
 	}
+	*/
 	public void EliminadoAutomatico(){
 
 
@@ -195,7 +230,7 @@ public class Board implements MouseListener
 			}
 		}
 		//no hay movimiento validos!
-		b.fill(); // deberia reiniciarse!
+		b.refill(); // deberia reiniciarse!
 		
 
 
@@ -204,16 +239,50 @@ public class Board implements MouseListener
 	//Reasigna y pinta todos los paneles, descartanto el arreglo de bloques
 	//original
 
-	public void fill() // LLENADO AL INICIO... terminado.
+	public void refill() //LLENADO AL INICIO... terminado.
 	{
-		for(int x = 0; x < 15; x++)
+
+		//Borro todos los bloques
+		for(int y = 14; y >= 0; y--)
 		{
-			for(int y = 0; y < 15; y++)
+			for(int x = 0; x <= 14; x++)
 			{
-				this.blocks[x][y] = new BloqueColor();
-				this.visual_blocks[x][y].setBackground(Board.getActualColor(this.blocks[x][y].getColor()));
+				this.grid_panel.remove(blocks[x][y]);
 			}
 		}
+		int c = 0;
+		for(int y = 14; y >= 0; y--)
+		{
+			for(int x = 0; x <= 14; x++)
+			{
+				c++;
+				//Veamos la probabilidad de que salga un comodin o no
+				Random rand1 = new Random();
+				int n = rand1.nextInt(100);
+				if( n < 95 )
+				{
+					//Lo que use aqui fue el metodo de la estrategia en wikipedia
+					//Lee lo que sale ahi para entender como funciona esta parte
+					this.blocks[x][y] = BloqueFactory.crearBloque( new ColorCreator() );
+				}
+				else
+				{
+					this.blocks[x][y] = BloqueFactory.crearBloque( new ComodinCreator() );
+				}
+				this.blocks[x][y].x = x;
+				this.blocks[x][y].y = y;
+				this.blocks[x][y].setPreferredSize(new Dimension(30, 30));
+				this.blocks[x][y].setBorder(BorderFactory.createLineBorder(Color.BLACK, 1, true));
+				this.blocks[x][y].paintColor();
+				this.blocks[x][y].setVisible(true);
+				this.blocks[x][y].addMouseListener(this);
+				this.blocks[x][y].add(new JLabel(""+c+""));
+
+				//Añadir al grid
+				this.grid_panel.add( blocks[x][y] );
+			}
+		}
+			
 	}
 
 	//Las coordenadas que se obtiene son del tipo (x, y);
@@ -224,56 +293,40 @@ public class Board implements MouseListener
 		{
 			return;
 		}
-		if(this.lastClick == null)
+
+		//No se ha seleccionado nada previamente
+		if(this.firstClickedBlock == null)
 		{
-			this.lastClick = (JPanel) me.getSource();
-			for(int x = 0; x < 15; x++)
-			{
-				for(int y = 0; y < 15; y++)
-				{
-					if(this.visual_blocks[x][y] == this.lastClick)
-					{
-						this.lastClickcoords[0] = x;
-						this.lastClickcoords[1] = y;
-						this.visual_blocks[x][y].setBorder(BorderFactory.createLineBorder(Color.MAGENTA,2,true));
-						return;
-					}
-				}
-			}
+			//Le pongo un highlight al bloque y lo guardo
+			this.firstClickedBlock = (Bloque) me.getSource();
+			this.firstClickedBlock.setBorder(BorderFactory.createLineBorder(Color.MAGENTA,2,true));
+
+			//Solo para debugear!!
+			
 		}
-		else if(this.lastClick == (JPanel) me.getSource())
+		else if(this.firstClickedBlock == (Bloque) me.getSource())
 		{
-			this.lastClick.setBorder(BorderFactory.createLineBorder(Color.BLACK,1,true));
-			this.lastClick = null;
+			this.firstClickedBlock.setBorder(BorderFactory.createLineBorder(Color.BLACK,1,true));
+			this.firstClickedBlock = null;
 		}
 		else
 		{
 			this.canClick = false;
-			this.lastClick.setBorder(BorderFactory.createLineBorder(Color.BLACK,1,true));
-			this.lastClick = (JPanel) me.getSource();
-			clickCoords = new int[2];
-			for(int x = 0; x < 15; x++)
-			{
-				for(int y = 0; y < 15; y++)
-				{
-					if(this.visual_blocks[x][y] == this.lastClick)
-					{
-						clickCoords[0] = x;
-						clickCoords[1] = y;
-						break;
-					}
-				}
-			}
+			//Reinicio el borde
+			this.firstClickedBlock.setBorder(BorderFactory.createLineBorder(Color.BLACK,1,true));
+			Bloque bloque1, bloque2;
+			bloque1 = this.firstClickedBlock;
+			bloque2 = (Bloque) me.getSource();
+			this.secondClickedBlock = bloque2;
 			//Es el movimiento valido?
-			int x = this.lastClickcoords[0];
-			int y = this.lastClickcoords[1];
-			int v = this.clickCoords[0];
-			int w = this.clickCoords[1];
-			System.out.println("PRE ("+x+", "+y+")|("+v+", "+w+")");
+			int x = bloque1.x;
+			int y = bloque1.y;
+			int v = bloque2.x;
+			int w = bloque2.y;
 			if( (x != v || ( (y-w) != 1 && (w-y) != 1)) 
 			&& 	(y != w || ( (x-v) != 1 && (v-x) != 1)) )
 			{
-				this.lastClick = null;
+				this.firstClickedBlock = null;
 				this.canClick = true;
 				this.score_panel.add(new JLabel("Invalid move"));
 				return;
@@ -281,13 +334,31 @@ public class Board implements MouseListener
 
 
 			//Swap blocks
-			temp_block = this.blocks[this.lastClickcoords[0]][this.lastClickcoords[1]];
-			this.blocks[this.lastClickcoords[0]][this.lastClickcoords[1]] = this.blocks[clickCoords[0]][clickCoords[1]];
-			this.blocks[clickCoords[0]][clickCoords[1]] = temp_block;
+			//No es posible intercambiar fisicamente dos JPanel
+			//por lo que les intercambiare su color, el background
+			//las coordenadas internas y externas en la lista
 
-			//Swap panel colors;
-			this.visual_blocks[this.lastClickcoords[0]][this.lastClickcoords[1]].setBackground(Board.getActualColor(this.blocks[this.lastClickcoords[0]][this.lastClickcoords[1]].getColor()));
-			this.visual_blocks[clickCoords[0]][clickCoords[1]].setBackground(Board.getActualColor(this.blocks[clickCoords[0]][clickCoords[1]].getColor()));
+			//temp <--- bloque1
+			Color temp_background = bloque1.getBackground();
+			String temp_color = bloque1.getColor();
+			int x_temp = bloque1.x;
+			int y_temp = bloque1.y;
+
+			//bloque1 <---- bloque2
+			blocks[x_temp][y_temp] = bloque2;
+			bloque1.x = bloque2.x;
+			bloque1.y = bloque2.y;	
+			bloque1.setBackground(bloque2.getBackground());
+			bloque1.setColor(bloque2.getColor());
+
+			//bloque2 <----- bloque 1
+			bloque2.setBackground(temp_background);
+			bloque2.setColor(temp_color);
+			blocks[bloque2.x][bloque2.y] = bloque1;
+			bloque2.x = x_temp;
+			bloque2.y = y_temp;
+
+			//Chequeo el swap luego de 700ms (modificable)
 			this.canClick = false;
 			new java.util.Timer().schedule( 
 	        new java.util.TimerTask(){
@@ -302,133 +373,122 @@ public class Board implements MouseListener
 
 	//Verifico si debo explotar
 	//Retorna true si explote y false si no...
-	public BloqueColor getRightBlock(int[] coord)
+	public Bloque getRightBlock(Bloque bloque)
 	{
-		int x = coord[0];
-		int y = coord[1];
+		int x = bloque.x;
+		int y = bloque.y;
 		if(x < 0 || x >= 14 || y < 0 || y > 14)
 			return null;
 		return this.blocks[x+1][y];
 	}
 
-	public BloqueColor getLeftBlock(int[] coord)
+	public Bloque getLeftBlock(Bloque bloque)
 	{
-		int x = coord[0];
-		int y = coord[1];
+		int x = bloque.x;
+		int y = bloque.y;
 		if(x <= 0 || x > 14 || y < 0 || y > 14)
 			return null;
 		return this.blocks[x-1][y];
 	}
 
-	public BloqueColor getTopBlock(int[] coord)
+	public Bloque getTopBlock(Bloque bloque)
 	{
-		int x = coord[0];
-		int y = coord[1];
-		if(x < 0 || x > 14 || y <= 0 || y > 14)
-			return null;
-		return this.blocks[x][y-1];
-	}
-
-	public BloqueColor getBottomBlock(int[] coord)
-	{
-		int x = coord[0];
-		int y = coord[1];
+		int x = bloque.x;
+		int y = bloque.y;
 		if(x < 0 || x > 14 || y < 0 || y >= 14)
 			return null;
 		return this.blocks[x][y+1];
 	}
 
-	public BloqueColor getColorAtPos(int x, int y)
+	public Bloque getBottomBlock(Bloque bloque)
+	{
+		int x = bloque.x;
+		int y = bloque.y;
+		if(x < 0 || x > 14 || y <= 0 || y > 14)
+			return null;
+		return this.blocks[x][y-1];
+	}
+
+	public Bloque getColorAtPos(int x, int y)
 	{
 		if(x < 0 || x > 14 || y < 0 || y > 14)
 			return null;
 		return this.blocks[x][y];
 	}
-	public boolean checkExplosions(int[] org_coord)// verificar o hacer explotar al inicio!
+	public boolean checkExplosions(Bloque bloque)// verificar o hacer explotar al inicio!
 	{
-		if(org_coord != null)
+		if(bloque.getColor().equals("-"))
+			return false;
+		int x_count = 1; //contador para ver vecinos adyacentes. si son 3 explota.
+		int y_count = 1;
+		ArrayList <Bloque> block_list = new ArrayList<Bloque>();
+		block_list.add(bloque);
+		if(bloque.getColor().equals("-"))
+			return false;
+		Bloque buffer = bloque;
+		while((buffer = getLeftBlock(buffer)) != null)
 		{
-			int[] coord = org_coord.clone();
-			int x = coord[0];
-			int y = coord[1];
-			int x_count = 1; //contador para ver vecinos adyacentes. si son 3 explota.
-			int y_count = 1;
-			ArrayList <int[]> block_list = new ArrayList<int[]>();
-			block_list.add(coord.clone());
-			BloqueColor original = getColorAtPos(coord[0], coord[1]);
-			if(original.getColor().equals("-"))
-				return false;
-			BloqueColor buffer;
-			while((buffer = getLeftBlock(coord)) != null) // ir a la izquierda!
+			if(!buffer.getColor().equals(bloque.getColor())
+			&& !buffer.getColor().equals("N")
+			&& !buffer.getColor().equals("GR"))
+				break;
+			x_count++;
+			block_list.add(buffer);
+		}
+		buffer = bloque;
+		while((buffer = getRightBlock(buffer)) != null)
+		{
+			if(!buffer.getColor().equals(bloque.getColor())
+			&& !buffer.getColor().equals("N")
+			&& !buffer.getColor().equals("GR"))
+				break;
+			x_count++;
+			block_list.add(buffer);
+		}
+		buffer = bloque;
+		while((buffer = getTopBlock(buffer)) != null)
+		{
+			if(!buffer.getColor().equals(bloque.getColor())
+			&& !buffer.getColor().equals("N")
+			&& !buffer.getColor().equals("GR"))
+				break;
+			y_count++;
+			block_list.add(buffer);
+		}
+		buffer = bloque;
+		while((buffer = getBottomBlock(buffer)) != null)
+		{
+			if(!buffer.getColor().equals(bloque.getColor())
+			&& !buffer.getColor().equals("N")
+			&& !buffer.getColor().equals("GR"))
+				break;
+			y_count++;
+			block_list.add(buffer);
+		}
+		System.out.println("The block ("+bloque.getColor()+") has "+x_count+" horizontal blocks and "+y_count+" vertical blocks");
+		if(x_count >= 3)
+		{
+			this.score_panel.add(new JLabel("BOOM!"));
+			for(Bloque c : block_list)
 			{
-				if(!buffer.getColor().equals(original.getColor())
-				&& !buffer.getColor().equals("$")
-				&& !buffer.getColor().equals("&"))
-					break;
-				x_count++;
-				coord[0]--;
-				block_list.add(coord.clone());
-			}
-			coord = org_coord.clone();
-			while((buffer = getRightBlock(coord)) != null)
-			{
-				if(!buffer.getColor().equals(original.getColor())
-				&& !buffer.getColor().equals("$")
-				&& !buffer.getColor().equals("&"))
-					break;
-				x_count++;
-				coord[0]++;
-				block_list.add(coord.clone());
-			}
-			coord = org_coord.clone();
-			while((buffer = getTopBlock(coord)) != null)
-			{
-				if(!buffer.getColor().equals(original.getColor())
-				&& !buffer.getColor().equals("$")
-				&& !buffer.getColor().equals("&"))
-					break;
-				y_count++;
-				coord[1]--;
-				block_list.add(coord.clone());
-			}
-			coord = org_coord.clone();
-			while((buffer = getBottomBlock(coord)) != null)
-			{
-				if(!buffer.getColor().equals(original.getColor())
-				&& !buffer.getColor().equals("$")
-				&& !buffer.getColor().equals("&"))
-					break;
-				y_count++;
-				coord[1]++;
-				block_list.add(coord.clone());
-			}
-			System.out.println("The block ("+original.getColor()+") has "+x_count+" horizontal blocks and "+y_count+" vertical blocks");
-			if(x_count >= 3)
-			{
-				this.score_panel.add(new JLabel("BOOM!"));
-				for(int[] c : block_list)
+				if(c.y == bloque.y)
 				{
-					if(c[1] == y)
-					{
-						this.visual_blocks[c[0]][c[1]].setBackground(Color.WHITE);
-						this.blocks[c[0]][c[1]] = null;
-					}
+					c.DestruirBloque();
 				}
-				return true;
 			}
-			else if(y_count >= 3)
+			return true;
+		}
+		else if(y_count >= 3)
+		{
+			this.score_panel.add(new JLabel("BOOM!"));
+			for(Bloque c: block_list) // recorre lista
 			{
-				this.score_panel.add(new JLabel("BOOM!"));
-				for(int[] c : block_list) // recorre lista
+				if(c.x == bloque.x)
 				{
-					if(c[0] == x)
-					{
-						this.visual_blocks[c[0]][c[1]].setBackground(Color.WHITE);
-						this.blocks[c[0]][c[1]] = null;
-					}
+					c.DestruirBloque();
 				}
-				return true;
 			}
+			return true;
 		}
 		return false;
 	}
@@ -442,90 +502,81 @@ public class Board implements MouseListener
 		//Nota: Si el vecino es otro comodin, pasara el problema anterior igual. Se debe arreglar.
 		boolean worked = false, worked2 = false;
 
+		Bloque bloque1, bloque2;
+		bloque1 = this.firstClickedBlock;
+		bloque2 = this.secondClickedBlock;
+
 		//Para el primero que se intercambio
-		if(this.getColorAtPos(this.lastClickcoords[0], this.lastClickcoords[1]).getColor().equals("$")
-		|| this.getColorAtPos(this.lastClickcoords[0], this.lastClickcoords[1]).getColor().equals("&"))
+		if(bloque1.getColor().equals("GR")
+		|| bloque1.getColor().equals("N"))
 		{
-			//El clone sirve para no usar la misma referencia (puntero) pues cambios
-			//en la referencia alteran al original.
 
-			//Veo vecino de la derecha.
-			int[] coords = this.lastClickcoords.clone();
-			coords[0]--;
-			worked = checkExplosions(coords);
-
-			//Si no exploto, izquierda
+			worked = checkExplosions(getLeftBlock(bloque1));
 			if(!worked)
 			{
-				coords = this.lastClickcoords.clone();
-				coords[0]++;
-				worked = checkExplosions(coords);
+				worked = checkExplosions(getRightBlock(bloque1));
 			}
-
-			//Arriba
 			if(!worked)
 			{
-				coords = this.lastClickcoords.clone();
-				coords[1]++;
-				worked = checkExplosions(coords);
+				worked = checkExplosions(getTopBlock(bloque1));
 			}
-
-			//Abajo
 			if(!worked)
 			{
-				coords = this.lastClickcoords.clone();
-				coords[1]--;
-				worked = checkExplosions(coords);	
+				worked = checkExplosions(getBottomBlock(bloque1));
 			}
 		}
 		else
 		{
-			worked = checkExplosions(this.lastClickcoords);
+			worked = checkExplosions(bloque1);
 		}
-		if(this.getColorAtPos(this.clickCoords[0], this.clickCoords[1]).getColor().equals("$")
-		|| this.getColorAtPos(this.clickCoords[0], this.clickCoords[1]).getColor().equals("&"))
+		if(bloque2.getColor().equals("GR")
+		|| bloque2.getColor().equals("N"))
 		{
-			int[] coords = this.clickCoords.clone();
-			coords[0]--;
-			worked2 = checkExplosions(coords);
-			if(!worked)
+
+			worked2 = checkExplosions(getLeftBlock(bloque2));
+			if(!worked2)
 			{
-				coords = this.clickCoords.clone();
-				coords[0]++;
-				worked2 = checkExplosions(coords);
+				worked2 = checkExplosions(getRightBlock(bloque2));
 			}
-			if(!worked)
+			if(!worked2)
 			{
-				coords = this.clickCoords.clone();
-				coords[1]++;
-				worked2 = checkExplosions(coords);
+				worked2 = checkExplosions(getTopBlock(bloque2));;
 			}
-			if(!worked)
+			if(!worked2)
 			{
-				coords = this.clickCoords.clone();
-				coords[1]--;
-				worked2 = checkExplosions(coords);	
+				worked2 = checkExplosions(getBottomBlock(bloque2));
 			}
 		}
 		else
 		{
-			worked2 = checkExplosions(this.clickCoords);
+			worked2 = checkExplosions(bloque2);
 		}
 
 		//No hubo explosiones, deshacer intercambio
 		if(!worked && !worked2)
 		{
-			System.out.println("POST ("+this.lastClickcoords[0]+", "+this.lastClickcoords[1]+")|("+this.clickCoords[0]+", "+this.clickCoords[1]+")");
-			temp_block = blocks[this.lastClickcoords[0]][this.lastClickcoords[1]];
-			blocks[this.lastClickcoords[0]][this.lastClickcoords[1]] = blocks[clickCoords[0]][clickCoords[1]];
-			blocks[clickCoords[0]][clickCoords[1]] = temp_block;
-			this.draw();
+			//temp <--- bloque1
+			Color temp_background = bloque1.getBackground();
+			String temp_color = bloque1.getColor();
+			int x_temp = bloque1.x;
+			int y_temp = bloque1.y;
 
-			this.visual_blocks[this.lastClickcoords[0]][this.lastClickcoords[1]].setBackground(Board.getActualColor(this.blocks[this.lastClickcoords[0]][this.lastClickcoords[1]].getColor()));
-			this.visual_blocks[clickCoords[0]][clickCoords[1]].setBackground(Board.getActualColor(this.blocks[clickCoords[0]][clickCoords[1]].getColor()));
-			this.fillEmptySpaces();
+			//bloque1 <---- bloque2
+			blocks[x_temp][y_temp] = bloque2;
+			bloque1.x = bloque2.x;
+			bloque1.y = bloque2.y;	
+			bloque1.setBackground(bloque2.getBackground());
+			bloque1.setColor(bloque2.getColor());
+
+			//bloque2 <----- bloque 1
+			bloque2.setBackground(temp_background);
+			bloque2.setColor(temp_color);
+			blocks[bloque2.x][bloque2.y] = bloque1;
+			bloque2.x = x_temp;
+			bloque2.y = y_temp;
 		}
-		this.lastClick = null; 
+		this.firstClickedBlock = null;
+		this.secondClickedBlock = null; 
 
 		//El usuario ya puede clickear.
 		this.canClick = true;

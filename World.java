@@ -28,7 +28,7 @@ public class World
     public static void main (String[] args)
     {
   		board = new Board();
-  		board.fill();
+  		board.refill();
   		board.draw();
     }
 }

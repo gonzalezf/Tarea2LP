@@ -15,69 +15,39 @@ import java.io.PrintStream;
  
 
 public class BloqueColor extends Bloque{
-	//HabilityBehavior habilidad; // se rompió el modelo!
-	String color;
-
-	public void DestruirBloque()
-	{	
-	}
 	
 	public BloqueColor()
 	{
-		Random rand1 = new Random();
-		int y = rand1.nextInt(100);
-		if (y <95){
-
-			Random rand = new Random();
-			int x = rand.nextInt(5);
-			if(x==0){
-				this.color = "R";		
-			}
-			if(x==1){
-				this.color = "B";
-			}
-
-			if(x==2){
-				this.color = "O";
-			}
-			
-			if(x==3){
-				this.color = "G";
-			}
-
-			if(x==4){
-				this.color = "Y";
-			}
+		Random rand = new Random();
+		int x = rand.nextInt(5);
+		if(x==0){
+			this.color = "R";		
 		}
-		else{
-			Random rand2 = new Random();
-			int z = rand2.nextInt(2);
-			if(z==0){
-				this.color = "$"; //comodin 1 
-
-			} 
-			if(z==1){
-				this.color = "&"; // comodin 2
-
-			}
-
+		else if(x==1){
+			this.color = "B";
 		}
 
+		else if(x==2){
+			this.color = "O";
+		}
+		
+		else if(x==3){
+			this.color = "G";
+		}
 
+		else if(x==4){
+			this.color = "Y";
+		}
 	}
 
-	public BloqueColor(String color)
+	@Override
+	public void DestruirBloque()
 	{
-		this.color = color;
+		this.setBackground(Color.WHITE);
+		this.color = "-";
 	}
-	
-	public String getColor()
+	public void paintColor()
 	{
-		return this.color;
-	}
-
-	public void setColor(String color)
-	{
-		this.color = color;
+		this.setBackground( Board.getActualColor(color) );
 	}
 }

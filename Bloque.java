@@ -21,7 +21,25 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+
+//La clase bloque sera ahora en concreto un panel.
 public abstract class Bloque extends JPanel
 {
+	public int x;
+	public int y;
+	public String color;
 	public abstract void DestruirBloque();
+	public void paintColor()
+	{
+		setBackground(Color.WHITE);
+	}
+	public String getColor()
+	{
+		return color;
+	}
+
+	public void setColor(String color)
+	{
+		this.color = color;
+	}
 }
