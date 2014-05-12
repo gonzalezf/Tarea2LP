@@ -15,7 +15,7 @@ import java.io.PrintStream;
  
 
 public class BloqueColor extends Bloque{
-	
+	HabilityBehavior habilidad = null;
 	public BloqueColor()
 	{
 		Random rand = new Random();
@@ -45,9 +45,18 @@ public class BloqueColor extends Bloque{
 	{
 		this.setBackground(Color.WHITE);
 		this.color = "-";
+
+		//Bloque bloque
+		//bloque.getBackground() == Color.WHITE;
+		//bloque.getColor.().euqlas("-");
 	}
 	public void paintColor()
 	{
 		this.setBackground( Board.getActualColor(color) );
+	}
+
+	public String toString()
+	{
+		return color;
 	}
 }

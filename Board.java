@@ -51,7 +51,6 @@ public class Board implements MouseListener
 	Bloque secondClickedBlock;
 	BloqueColor temp_block;
 	Bloque blocks[][];
-	int[] clickCoords;
 	public Board()
 	{
 		this.canClick = true;
@@ -131,7 +130,7 @@ public class Board implements MouseListener
 		else if(color.equals("G"))
 			return Color.GREEN;
 		else if(color.equals("O"))
-			return Color.ORANGE;
+			return new Color(184, 134, 11);
 		else if(color.equals("Y"))
 			return Color.YELLOW;
 		else if(color.equals("$"))
@@ -143,16 +142,18 @@ public class Board implements MouseListener
 	}
 
 	public void FillColumn(int columna){ //llenado automatico por columna
-		for(int y = 0;y<15;y++){ //revisa en una columna desde abajo hacia arriba
+		for(int y = 0;y<14;y++){ //revisa en una columna desde abajo hacia arriba
 			String colorpresente = 	this.blocks[columna][y].getColor(); //obtiene color
 			if (colorpresente.equals("-") ){ //significa que esta en blanco...hay que reemplazar color
-				System.out.println("Colorenblanco, reemplazar x:"+columna+"y:"+y+".");
+		//		System.out.println("Colorenblanco, reemplazar x:"+columna+"y:"+y+".");
 				//hacer algo, en el caso que arriba aun queden colores...
-				for(int j = y;j<15;j++){
+				for(int j = y+1;j<15;j++){
 					if(!this.blocks[columna][j].getColor().equals("-")){
-						this.blocks[columna][y].setColor(this.blocks[columna][j].getColor()); //se hizo un swap.
+						this.blocks[columna][y].setColor(this.blocks[columna][j].getColor()); //se hizo un reemplazo
 						this.blocks[columna][j].setColor("-"); // el que tenia color ahora es blanco..!
 						this.blocks[columna][y].paintColor();
+						System.out.println("bloque:["+columna+"]["+y+"]color nuevo: "+this.blocks[columna][y].getColor()+".");
+			
 					}
 					if(j ==14 && this.blocks[columna][j].getColor().equals("-")){
 					//Si llego a la cima y es blanco hay que sacar colores nuevos
@@ -166,16 +167,18 @@ public class Board implements MouseListener
 								{
 									//Lo que use aqui fue el metodo de la estrategia en wikipedia
 									//Lee lo que sale ahi para entender como funciona esta parte
-									Bloque b1 = BloqueFactory.crearBloque( new ColorCreator() );
+				f					Bloque b1 = BloqueFactory.crearBloque( new ColorCreator() );
 									this.blocks[columna][z].setColor(b1.getColor());
-
+									this.blocks[columna][z].paintColor();
+									System.out.println("bloque:["+columna+"]["+y+"]color nuevo: "+this.blocks[columna][y].getColor()+".");
 									}
 								else
 								{
 									Bloque b1 = BloqueFactory.crearBloque( new ComodinCreator() );
 									this.blocks[columna][z].setColor(b1.getColor());
 									this.blocks[columna][z].paintColor();
-
+									System.out.println("bloque:["+columna+"]["+y+"]color nuevo: "+this.blocks[columna][y].getColor()+".");
+							
 								}
 
 
@@ -362,8 +365,6 @@ public class Board implements MouseListener
 			this.firstClickedBlock = (Bloque) me.getSource();
 			this.firstClickedBlock.setBorder(BorderFactory.createLineBorder(Color.MAGENTA,2,true));
 
-			//Solo para debugear!!
-			
 		}
 		else if(this.firstClickedBlock == (Bloque) me.getSource())
 		{
@@ -402,22 +403,17 @@ public class Board implements MouseListener
 			//temp <--- bloque1
 			Color temp_background = bloque1.getBackground();
 			String temp_color = bloque1.getColor();
-			int x_temp = bloque1.x;
-			int y_temp = bloque1.y;
+			HabilityBehavior temp_hability = bloque1.habilidad;
 
 			//bloque1 <---- bloque2
-			blocks[x_temp][y_temp] = bloque2;
-			bloque1.x = bloque2.x;
-			bloque1.y = bloque2.y;	
 			bloque1.setBackground(bloque2.getBackground());
 			bloque1.setColor(bloque2.getColor());
+			bloque1.habilidad = bloque2.habilidad;
 
 			//bloque2 <----- bloque 1
 			bloque2.setBackground(temp_background);
 			bloque2.setColor(temp_color);
-			blocks[bloque2.x][bloque2.y] = bloque1;
-			bloque2.x = x_temp;
-			bloque2.y = y_temp;
+			bloque2.habilidad = temp_hability;
 
 			//Chequeo el swap luego de 700ms (modificable)
 			this.canClick = false;
@@ -429,6 +425,71 @@ public class Board implements MouseListener
 	            }
 	        }, 
 	        700);
+		}
+	}
+
+	public void HighLightNeighboors(Bloque bloque)
+	{
+		int x_count = 1; //contador para ver vecinos adyacentes. si son 3 explota.
+		int y_count = 1;
+		ArrayList <Bloque> block_list = new ArrayList<Bloque>();
+		block_list.add(bloque);
+		System.out.println("Verificar vecinos!\n");
+		if(bloque.getColor().equals("-"))
+			return;
+		Bloque buffer = bloque;
+		System.out.println("Vecinos arriba\n");
+		while((buffer = getLeftBlock(buffer)) != null)
+		{
+			System.out.println(buffer.toString());
+			if(!buffer.getColor().equals(bloque.getColor())
+			&& !buffer.getColor().equals("N")
+			&& !buffer.getColor().equals("GR"))
+				break;
+			x_count++;
+			block_list.add(buffer);
+		}
+		buffer = bloque;
+		System.out.println("Vecinos derecha\n");
+		while((buffer = getRightBlock(buffer)) != null)
+		{
+			if(!buffer.getColor().equals(bloque.getColor())
+			&& !buffer.getColor().equals("N")
+			&& !buffer.getColor().equals("GR"))
+				break;
+			x_count++;
+			block_list.add(buffer);
+		}
+		buffer = bloque;
+
+		System.out.println("Vecinos arriba\n");
+		while((buffer = getTopBlock(buffer)) != null)
+		{
+			if(!buffer.getColor().equals(bloque.getColor())
+			&& !buffer.getColor().equals("N")
+			&& !buffer.getColor().equals("GR"))
+				break;
+			y_count++;
+			block_list.add(buffer);
+		}
+		buffer = bloque;
+		System.out.println("Vecinos abajo\n");
+		while((buffer = getBottomBlock(buffer)) != null)
+		{
+			if(!buffer.getColor().equals(bloque.getColor())
+			&& !buffer.getColor().equals("N")
+			&& !buffer.getColor().equals("GR"))
+				break;
+			y_count++;
+			block_list.add(buffer);
+		}
+		System.out.println("The block ("+bloque.getColor()+") has "+x_count+" horizontal blocks and "+y_count+" vertical blocks");
+		System.out.println("Vecinos: ");
+		for(Bloque c : block_list)
+		{
+			c.setBorder(BorderFactory.createLineBorder(Color.MAGENTA,2,true));
+			System.out.println("("+c.x+", "+c.y+")");
+			System.out.println("-------------------\n\n");
 		}
 	}
 
@@ -543,7 +604,7 @@ public class Board implements MouseListener
 		{
 			this.score_panel.add(new JLabel("BOOM!"));
 			for(Bloque c: block_list) // recorre lista
-			{
+			{	
 				if(c.x == bloque.x)
 				{
 					c.DestruirBloque();
@@ -566,12 +627,13 @@ public class Board implements MouseListener
 		Bloque bloque1, bloque2;
 		bloque1 = this.firstClickedBlock;
 		bloque2 = this.secondClickedBlock;
+		System.out.println("POSTSWAP: ("+bloque1.x+", "+bloque1.y+")"+"("+bloque2.x+", "+bloque2.y+")");
 
 		//Para el primero que se intercambio
 		if(bloque1.getColor().equals("GR")
 		|| bloque1.getColor().equals("N"))
 		{
-
+			System.out.println("bloque1 es comodin");
 			worked = checkExplosions(getLeftBlock(bloque1));
 			if(!worked)
 			{
@@ -612,29 +674,20 @@ public class Board implements MouseListener
 		{
 			worked2 = checkExplosions(bloque2);
 		}
-
 		//No hubo explosiones, deshacer intercambio
 		if(!worked && !worked2)
 		{
 			//temp <--- bloque1
 			Color temp_background = bloque1.getBackground();
 			String temp_color = bloque1.getColor();
-			int x_temp = bloque1.x;
-			int y_temp = bloque1.y;
 
 			//bloque1 <---- bloque2
-			blocks[x_temp][y_temp] = bloque2;
-			bloque1.x = bloque2.x;
-			bloque1.y = bloque2.y;	
 			bloque1.setBackground(bloque2.getBackground());
 			bloque1.setColor(bloque2.getColor());
 
 			//bloque2 <----- bloque 1
 			bloque2.setBackground(temp_background);
 			bloque2.setColor(temp_color);
-			blocks[bloque2.x][bloque2.y] = bloque1;
-			bloque2.x = x_temp;
-			bloque2.y = y_temp;
 		}
 		else{
 			FillBoard();

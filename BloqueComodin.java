@@ -23,8 +23,6 @@ import java.awt.event.MouseEvent;
 
 public class BloqueComodin extends Bloque
 {
-	HabilityBehavior habilidad;
-
 	public BloqueComodin()
 	{
 		//Falta random!!!

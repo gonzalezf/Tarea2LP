@@ -29,6 +29,7 @@ public abstract class Bloque extends JPanel
 	public int y;
 	public String color;
 	public abstract void DestruirBloque();
+	public HabilityBehavior habilidad;
 	public void paintColor()
 	{
 		setBackground(Color.WHITE);
