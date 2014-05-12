@@ -142,6 +142,67 @@ public class Board implements MouseListener
 
 	}
 
+	public void FillColumn(int columna){ //llenado automatico por columna
+		for(int y = 0;y<15;y++){ //revisa en una columna desde abajo hacia arriba
+			String colorpresente = 	this.blocks[columna][y].getColor(); //obtiene color
+			if (colorpresente.equals("-") ){ //significa que esta en blanco...hay que reemplazar color
+				System.out.println("Colorenblanco, reemplazar x:"+columna+"y:"+y+".");
+				//hacer algo, en el caso que arriba aun queden colores...
+				for(int j = y;j<15;j++){
+					if(!this.blocks[columna][j].getColor().equals("-")){
+						this.blocks[columna][y].setColor(this.blocks[columna][j].getColor()); //se hizo un swap.
+						this.blocks[columna][j].setColor("-"); // el que tenia color ahora es blanco..!
+						this.blocks[columna][y].paintColor();
+					}
+					if(j ==14 && this.blocks[columna][j].getColor().equals("-")){
+					//Si llego a la cima y es blanco hay que sacar colores nuevos
+						for(int z = y;z<15;z++){ //aqui volvemos a revisar desde abajo..
+
+							//crear nuevo bloque.. sacar el color //revisar si sigue cumplienado propiedad de comodin.
+							if(this.blocks[columna][z].equals("-")){
+								Random rand1 = new Random();
+								int n = rand1.nextInt(100);
+								if( n < 95 )
+								{
+									//Lo que use aqui fue el metodo de la estrategia en wikipedia
+									//Lee lo que sale ahi para entender como funciona esta parte
+									Bloque b1 = BloqueFactory.crearBloque( new ColorCreator() );
+									this.blocks[columna][z].setColor(b1.getColor());
+
+									}
+								else
+								{
+									Bloque b1 = BloqueFactory.crearBloque( new ComodinCreator() );
+									this.blocks[columna][z].setColor(b1.getColor());
+									this.blocks[columna][z].paintColor();
+
+								}
+
+
+							}
+
+						}
+
+
+					} 
+
+
+				}
+			}
+
+
+		}
+		
+
+	}
+	public void FillBoard(){ //llenado automatico luego de cada insercion
+
+		for(int x= 0; x<15;x++){
+//			System.out.println("Felipe!!! entro!!!! columna"+x+".");
+			FillColumn(x);
+
+		}
+	}
 	public void draw()
 	{
 		this.frame.revalidate();
@@ -574,6 +635,9 @@ public class Board implements MouseListener
 			blocks[bloque2.x][bloque2.y] = bloque1;
 			bloque2.x = x_temp;
 			bloque2.y = y_temp;
+		}
+		else{
+			FillBoard();
 		}
 		this.firstClickedBlock = null;
 		this.secondClickedBlock = null; 

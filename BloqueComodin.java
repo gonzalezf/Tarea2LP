@@ -28,8 +28,10 @@ public class BloqueComodin extends Bloque
 	public BloqueComodin()
 	{
 		//Falta random!!!
-		int hability_type = 1;
-		if(hability_type == 1)
+		Random rand = new Random();
+		int x = rand.nextInt(2);
+
+		if(x == 0 )
 		{
 			habilidad = (HabilityBehavior) new HabilityT1();
 			setBackground(Color.GRAY);
