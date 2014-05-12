@@ -275,7 +275,7 @@ public class Board implements MouseListener
 								{
 									//Lo que use aqui fue el metodo de la estrategia en wikipedia
 									//Lee lo que sale ahi para entender como funciona esta parte
-				f					Bloque b1 = BloqueFactory.crearBloque( new ColorCreator() );
+									Bloque b1 = BloqueFactory.crearBloque( new ColorCreator() );
 									this.blocks[columna][z].setColor(b1.getColor());
 									this.blocks[columna][z].paintColor();
 									System.out.println("bloque:["+columna+"]["+y+"]color nuevo: "+this.blocks[columna][y].getColor()+".");
@@ -355,7 +355,7 @@ public class Board implements MouseListener
 		//recorrer arreglo completo...! y eliminar los adyacentes..!
 		for(int i = 0;i<15;i++){
 			for(int j=0;j<15;j++){
-				checkExplosions(bloque[i][j]);
+				checkExplosions(this.blocks[i][j]);
 
 
 			}
@@ -375,7 +375,7 @@ public class Board implements MouseListener
 		String color = "";
 		for(int y=0;y<15;y++){
 			for(int x = 0;x<15;x++){
-				if(color.equals(b.blocks[x][y].getColor()) || b.blocks[x][y].getColor().equals("$") || b.blocks[x][y].getColor().equals("&")){
+				if(color.equals(b.blocks[x][y].getColor()) || b.blocks[x][y].getColor().equals("N") || b.blocks[x][y].getColor().equals("GR")){
 					contador+=1;
 
 				}
