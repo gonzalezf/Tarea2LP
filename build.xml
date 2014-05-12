@@ -1,76 +1,13 @@
-<project name="Tarea2LP" basedir="." default="main">
+<project name="tarea2lp" default="compilar" basedir=".">
 
-    <property name="src.dir"     value="src"/>
-    <property name="classes.dir" value="classes"/>
-    <property name="jar.dir"     value="jar"/>
-    <property name="main-class"  value="Board"/>
-    <property name="arg0" value=""/>
-    <property name="arg1" value=""/>
-    <property name="arg2" value=""/>
-    <property name="arg3" value=""/>
-    <property name="arg4" value=""/>
-    <property name="arg5" value=""/>
+<property name="fuente" value="src"/>
+<property name="destino" value="classes"/>
 
-
-    <target name="clean">
-        <delete dir="${classes.dir}"/>
-        <delete dir="${jar.dir}"/>
-    </target>
-
-    <target name="compile">
-        <mkdir dir="${classes.dir}"/>
-        <javac includeantruntime="false" srcdir="${src.dir}" destdir="${classes.dir}"/>
-    </target>
-
-    <target name="jar" depends="compile">
-        <mkdir dir="${jar.dir}"/>
-        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
-            <manifest>
-                <attribute name="Main-Class" value="${main-class}"/>
-            </manifest>
-        </jar>
-    </target>
-
-    <target name="runc" depends="compile">
-        <java classname="${main-class}" classpath="${classes.dir}">
-            <arg value="${arg0}"/>
-            <arg value="${arg1}"/>
-            <arg value="${arg2}"/>
-            <arg value="${arg3}"/>
-            <arg value="${arg4}"/>
-            <arg value="${arg5}"/>
-        </java>
-    </target>
-
-    <target name="runi" depends="jar">
-
-        <java jar="${jar.dir}/${ant.project.name}.jar" fork="true">
-        <arg value="${arg0}"/>
-        <arg value="${arg1}"/>
-        <arg value="${arg2}"/>
-        <arg value="${arg3}"/>
-        <arg value="${arg4}"/>
-        <arg value="${arg5}"/>
-
-        </java>
-
-    </target>
-    
-    <script language="javascript">
-        <![CDATA[
- 
-            var argument = project.getProperty("arg0");
-            if(argument.equals("c"))
-            {
-                project.executeTarget("runc");
-            }
-            else
-            {
-                project.executeTarget("runi")
-            }
-         ]]>
-        </script> 
-
-    <target name="main"/>
-
+<target name="clean">
+<delete dir="${destino}"/>
+</target>
+<target name="compilar">
+<mkdir dir="${destino}"/>
+<javac srcdir="${fuente}" destdir="${destino}" includeantruntime="false"/>
+</target>
 </project>
